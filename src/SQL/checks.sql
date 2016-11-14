@@ -29,3 +29,19 @@ GROUP BY
 -- только model_id == 0 в количестве 7601
 -- то есть в данной категории нет ни одного предложения, которое привязано к КМ. Что является косвенным фактором, что это не гуру категория.
 -- Каким образом, явно выяснить тип категории?
+
+-- пытаюсь разобраться с binary_price_price IS NULL
+SELECT
+  SUM(IF(binary_price_price IS NULL,1,0)) as num_NULL_price,
+  COUNT(*) as total_num_offers,
+  SUM(IF(binary_price_price IS NULL,1,0))/COUNT(*) as rate
+FROM
+  medintsev.ma1796_fee_thresholds LEFT JOIN
+  (
+    SELECT *
+    FROM dictionaries.offers 
+    WHERE
+      priority_regions = 213 AND -- смотрим только по Москве
+      day = '2016-11-11'
+  ) a
+  ON ma1796_fee_thresholds.hid = a.category_id
